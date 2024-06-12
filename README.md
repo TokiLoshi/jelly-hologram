@@ -6,20 +6,20 @@
 
 ### Sources and inspiration
 
-(Jelly Fish Tutorial starter)[]
-(Hologram Lesson from Three.js journey)[]
-(Coffee smoke lesson from Three.js journey)[]
-(Water current tutorial from Youtube)[]
+(Jelly Fish Tutorial starter)[https://www.youtube.com/watch?v=Nm4fEI7JqC0]
+(Hologram Lesson from Three.js journey)[https://threejs-journey.com/lessons/hologram-shader#color]
+(Coffee smoke lesson from Three.js journey)[https://threejs-journey.com/lessons/coffee-smoke-shader#introduction]
+(Water current tutorial from Youtube)[https://www.youtube.com/watch?v=0D-J_Lbxeeg&t=2422s]
 
 ## Todos
 
-- [ ] initial project set up
-- [ ] get test mesh to render and animated
-- [ ] add helper widgets (leva, perf)
-- [ ] commit project
-- [ ] deploy to vercel
+- [x] initial project set up
+- [x] get test mesh to render and animated
+- [x] commit project
+- [x] deploy to vercel
 - [ ] import model
 - [ ] apply hologram effect
+- [ ] add helper widgets (leva, perf)
 - [ ] apply coffee smoke effect to procedurally generate tentacles
 - [ ] apply scaling to look like jellyfish are growing and moving
 - [ ] apply glitch effect to tentacles
