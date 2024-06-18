@@ -9,6 +9,7 @@ import { useRef } from "react";
 import * as THREE from "three";
 import jellyVertexShader from "./shaders/hologram/vertex.glsl";
 import jellyFragmentShader from "./shaders/hologram/fragment.glsl";
+import { useControls } from "leva";
 
 console.log(jellyVertexShader);
 console.log(jellyFragmentShader);
@@ -16,13 +17,14 @@ console.log(jellyFragmentShader);
 const jellyMaterial = new THREE.ShaderMaterial({
 	uniforms: {
 		uTime: new THREE.Uniform(0),
-		uColor: new THREE.Color(0x00ff00),
+		uColor: new THREE.Uniform(new THREE.Color("purple")),
 	},
 	transparent: true,
 	side: THREE.DoubleSide,
 	depthWrite: false,
 	vertexShader: jellyVertexShader,
 	fragmentShader: jellyFragmentShader,
+	blending: THREE.AdditiveBlending,
 });
 
 export default function Experience() {
@@ -31,6 +33,13 @@ export default function Experience() {
 	// useFrame(
 	// 	() => (testRef.current.rotation.x = testRef.current.rotation.y += 0.01)
 	// );
+
+	const materialParameters = {};
+	materialParameters.color = "#70c1ff";
+
+	useControls({
+		color: materialParameters.color,
+	});
 
 	useFrame((state, delta) => {
 		jellyRef.current.rotation.y += delta * 0.1;
@@ -52,7 +61,7 @@ export default function Experience() {
 		<>
 			<OrbitControls />
 			{/* <directionalLight intensity={1} position={[-1, 2, -1]} /> */}
-			<ambientLight intensity={Math.PI / 2} />
+			<ambientLight intensity={Math.PI / 4} />
 			<primitive
 				object={model.scene}
 				position={[0, 0, 0]}
