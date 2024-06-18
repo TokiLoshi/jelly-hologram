@@ -15,7 +15,7 @@ console.log(jellyFragmentShader);
 
 const jellyMaterial = new THREE.ShaderMaterial({
 	uniforms: {
-		uTime: 0,
+		uTime: new THREE.Uniform(0),
 		uColor: new THREE.Color(0x00ff00),
 	},
 	transparent: true,
@@ -34,6 +34,8 @@ export default function Experience() {
 
 	useFrame((state, delta) => {
 		jellyRef.current.rotation.y += delta * 0.1;
+		const elapsedTime = state.clock.getElapsedTime();
+		jellyMaterial.uniforms.uTime.value = elapsedTime;
 		// jellyRef.current.rotation.x += Math.sin(delta * 0.2);
 	});
 
@@ -49,11 +51,11 @@ export default function Experience() {
 	return (
 		<>
 			<OrbitControls />
-			<directionalLight intensity={1} position={[2, -1, -1]} />
+			{/* <directionalLight intensity={1} position={[-1, 2, -1]} /> */}
 			<ambientLight intensity={Math.PI / 2} />
 			<primitive
 				object={model.scene}
-				position={[0, 1, 0]}
+				position={[0, 0, 0]}
 				material={jellyMaterial}
 				ref={jellyRef}
 				scale={[0.3, 0.3, 0.3]}
