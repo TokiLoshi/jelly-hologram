@@ -9,15 +9,12 @@ import { useRef } from "react";
 import * as THREE from "three";
 import jellyVertexShader from "./shaders/hologram/vertex.glsl";
 import jellyFragmentShader from "./shaders/hologram/fragment.glsl";
-import { useControls } from "leva";
-
-console.log(jellyVertexShader);
-console.log(jellyFragmentShader);
+import { useControls, Leva } from "leva";
 
 const jellyMaterial = new THREE.ShaderMaterial({
 	uniforms: {
 		uTime: new THREE.Uniform(0),
-		uColor: new THREE.Uniform(new THREE.Color("purple")),
+		uColor: new THREE.Uniform(new THREE.Color("#AF47D2")),
 	},
 	transparent: true,
 	side: THREE.DoubleSide,
@@ -34,18 +31,20 @@ export default function Experience() {
 	// 	() => (testRef.current.rotation.x = testRef.current.rotation.y += 0.01)
 	// );
 
-	const materialParameters = {};
-	materialParameters.color = "#70c1ff";
-
-	useControls({
-		color: materialParameters.color,
+	const materialParameters = useControls({
+		color: {
+			value: "#95efc0",
+		},
 	});
 
 	useFrame((state, delta) => {
 		jellyRef.current.rotation.y += delta * 0.1;
 		const elapsedTime = state.clock.getElapsedTime();
 		jellyMaterial.uniforms.uTime.value = elapsedTime;
-		// jellyRef.current.rotation.x += Math.sin(delta * 0.2);
+		if (!jellyMaterial.uniforms.uColor.value.equals(materialParameters.color)) {
+			jellyMaterial.uniforms.uColor.value.set(materialParameters.color);
+			// jellyRef.current.rotation.x += Math.sin(delta * 0.2);
+		}
 	});
 
 	// Traverse the scene to add the material to the jelly fish

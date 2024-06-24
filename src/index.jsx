@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 				far: 250,
 				position: [-8, 2, 6],
 			}}>
-			<color attach='background' args={["#171720"]} />
+			<color attach='background' args={["#00224D"]} />
 			<Experience />
 		</Canvas>
 	</>
