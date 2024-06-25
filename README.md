@@ -17,10 +17,14 @@
 - [x] get test mesh to render and animated
 - [x] commit project
 - [x] deploy to vercel
-- [ ] import model
-- [ ] apply hologram effect
+- [x] import model
+- [x] apply hologram effect
+- [ ] add the glitch if the jelly is touched
 - [ ] add helper widgets (leva, perf)
 - [ ] apply coffee smoke effect to procedurally generate tentacles
+- [ ] use the differnt channels to get multiple noises
+- [ ] experiment using colour in the image
+- [ ] add tone mapping that's included in the fragment shader
 - [ ] apply scaling to look like jellyfish are growing and moving
 - [ ] apply glitch effect to tentacles
 - [ ] apply bubbles and current to background
@@ -32,3 +36,16 @@
 ### Stretch Goals
 
 - [ ] add interaction on touch, gesture or click
+
+# Using the Perlin Noise Maker
+
+(Perlin Noise Maker)[http://kitfox.com/projects/perlinNoiseMaker/]
+Variables:
+Random Seed = -10
+width = 257
+height = 260
+levels = 1
+attenuation = 0.6
+groove = True
+Color = False
+Alpha = True

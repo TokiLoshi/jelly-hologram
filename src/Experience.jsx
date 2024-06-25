@@ -2,6 +2,7 @@ import {
 	OrbitControls,
 	shaderMaterial,
 	Center,
+	useTexture,
 	useGLTF,
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
@@ -10,7 +11,11 @@ import * as THREE from "three";
 import jellyVertexShader from "./shaders/hologram/vertex.glsl";
 import jellyFragmentShader from "./shaders/hologram/fragment.glsl";
 import { useControls, Leva } from "leva";
+import { DoubleSide } from "three";
+import tentacleVertexShader from "./shaders/tentacles/vertex.glsl";
+import tentacleFragmentShader from "./shaders/tentacles/fragment.glsl";
 
+// Shader material based on Bruno Simon's three.js journey hologram lesson
 const jellyMaterial = new THREE.ShaderMaterial({
 	uniforms: {
 		uTime: new THREE.Uniform(0),
@@ -61,13 +66,16 @@ export default function Experience() {
 			<OrbitControls />
 			{/* <directionalLight intensity={1} position={[-1, 2, -1]} /> */}
 			<ambientLight intensity={Math.PI / 4} />
-			<primitive
-				object={model.scene}
-				position={[0, 0, 0]}
-				material={jellyMaterial}
-				ref={jellyRef}
-				scale={[0.3, 0.3, 0.3]}
-			/>
+			<group>
+				<primitive
+					object={model.scene}
+					position={[0, 0, 0]}
+					material={jellyMaterial}
+					ref={jellyRef}
+					scale={[0.3, 0.3, 0.3]}
+				/>
+				<Tentacles />
+			</group>
 			// Test mesh
 			{/* <mesh ref={testRef}>
 				<boxGeometry args={[1, 1]} position={[0, -1, 0]} />
@@ -77,6 +85,41 @@ export default function Experience() {
 					fragmentShader={jellyFragmentShader}
 				/>
 			</mesh> */}
+		</>
+	);
+}
+
+// Tentacles material based on Bruno Simon's coffee smoke material lesson
+function Tentacles() {
+	const perlinTexture = useTexture("./noiseTexture.png");
+	perlinTexture.wrapS = THREE.RepeatWrapping;
+	perlinTexture.wrapT = THREE.RepeatWrapping;
+
+	const tentacleMaterial = useRef(
+		new THREE.ShaderMaterial({
+			vertexShader: tentacleVertexShader,
+			fragmentShader: tentacleFragmentShader,
+			wireframe: false,
+			side: THREE.DoubleSide,
+			transparent: true,
+			uniforms: {
+				uPerlinTexture: new THREE.Uniform(perlinTexture),
+				uTime: new THREE.Uniform(0),
+			},
+		})
+	);
+
+	useFrame((state, delta) => {
+		const elapsedTime = state.clock.getElapsedTime();
+		tentacleMaterial.current.uniforms.uTime.value = elapsedTime;
+	});
+
+	return (
+		<>
+			<mesh position={[0, -1.0, 0]}>
+				<planeGeometry args={[0.8, 1.5, 16, 64]} />
+				<primitive object={tentacleMaterial.current} attach='material' />
+			</mesh>
 		</>
 	);
 }

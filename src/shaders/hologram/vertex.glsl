@@ -20,8 +20,10 @@ void main () {
   // Final position
   gl_Position = projectionMatrix * viewMatrix * modelPosition;
 
+  // Model normal  
+  vec4 modelNormal = modelMatrix * vec4(normal, 0.0);
   // Pass position to fragment shader
   vPosition = modelPosition.xyz;
 
-  vNormal = normal;
+  vNormal = modelNormal.xyz;
 }
