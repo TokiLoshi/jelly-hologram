@@ -124,9 +124,8 @@ function Tentacles() {
 					<planeGeometry args={[0.8, 1.0, 16, 64]} />
 					<primitive object={tentacleMaterial.current} attach='material' />
 				</mesh>
-				<mesh position={[0.1, -0.9, 0.1]}>
-					{/* <RoundedBox args={[0.5, 1, 1]} /> */}
-					<planeGeometry args={[0.6, 1.0, 10, 64]} rotation={Math.PI * 0.25} />
+				<mesh position={[0.1, -0.9, 0.1]} rotation={Math.PI * 0.5}>
+					<planeGeometry args={[0.6, 1.0, 10, 64]} />
 					<primitive object={tentacleMaterial.current} attach='material' />
 				</mesh>
 			</group>
