@@ -10,6 +10,8 @@ vec2 rotate2D(vec2 value, float angle) {
   return m * value;
 }
 
+#include ../includes/random2D.glsl 
+
 void main () {
   vec3 newPosition = position;
 
@@ -18,11 +20,14 @@ void main () {
   float angle = twistPerlin * 5.0;
   newPosition.xz = rotate2D(newPosition.xz, angle);
 
-  // Current 
-  // vec2 currentOffset = vec2(
-  //   texture(uPerlinTexture, vec2(0.25, uTime)).r);
-  // currentOffset *= pow(uv.y,  2.0) * 10.1;
-  // newPosition.xz += currentOffset;
+  // Add bounce 
+  float glitchTime = uTime + newPosition.y + twistPerlin;
+  float glitchStrength = sin(glitchTime) + sin(glitchTime * 3.45) + sin(glitchTime * 8.76);
+  glitchStrength /= 3.0;
+  glitchStrength = smoothstep(0.3, 1.0, glitchStrength);
+  glitchStrength *= 0.15;
+  newPosition.x += (random2D(newPosition.xz + uTime) - 0.5) * glitchStrength;
+  newPosition.y += (random2D(newPosition.zx + uTime) - 0.5) * glitchStrength;
 
   // Final Position
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
