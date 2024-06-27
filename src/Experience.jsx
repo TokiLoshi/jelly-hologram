@@ -96,6 +96,8 @@ function Tentacles() {
 	perlinTexture.wrapS = THREE.RepeatWrapping;
 	perlinTexture.wrapT = THREE.RepeatWrapping;
 
+	const tentacleRef = useRef();
+
 	const tentacleMaterial = useRef(
 		new THREE.ShaderMaterial({
 			vertexShader: tentacleVertexShader,
@@ -111,23 +113,46 @@ function Tentacles() {
 		})
 	);
 
+	const tentacleGeometryRef = useRef();
+	console.log("Tentacle Geometry", tentacleGeometryRef.current);
+
 	useFrame((state, delta) => {
 		const elapsedTime = state.clock.getElapsedTime();
+		if (tentacleRef.current) {
+			tentacleRef.current.rotation.y += delta * 0.1;
+		}
+
+		if (tentacleGeometryRef.current) {
+			tentacleGeometryRef.current.rotation.z += cos(delta * 20);
+		}
 		tentacleMaterial.current.uniforms.uTime.value = elapsedTime;
 	});
 
 	return (
 		<>
 			<group>
-				<mesh position={[0, -1.0, 0]}>
+				<mesh position={[0, -1.0, 0]} ref={tentacleRef}>
 					{/* <RoundedBox args={[0.5, 1, 1]} /> */}
-					<planeGeometry args={[0.8, 1.0, 16, 64]} />
+					<planeGeometry
+						args={[0.8, 1.0, 16, 64]}
+						ref={tentacleGeometryRef.current}
+					/>
 					<primitive object={tentacleMaterial.current} attach='material' />
 				</mesh>
-				<mesh position={[0.1, -0.9, 0.1]} rotation={Math.PI * 0.5}>
-					<planeGeometry args={[0.6, 1.0, 10, 64]} />
+				{/* <mesh
+					position={[0.2, -0.8, 0.1]}
+					rotation={Math.PI * 0.25}
+					ref={tentacleGeometryRef}>
+					<planeGeometry args={[0.7, 1.0, 10, 64]} />
 					<primitive object={tentacleMaterial.current} attach='material' />
-				</mesh>
+				</mesh> */}
+				{/* <mesh
+					position={[0.6, 1.8, 0.1]}
+					rotation={Math.PI * 0.25}
+					ref={tentacleRef}>
+					<planeGeometry args={[0.7, 1.0, 10, 64]} />
+					<primitive object={tentacleMaterial.current} attach='material' />
+				</mesh> */}
 			</group>
 		</>
 	);
