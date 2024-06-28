@@ -15,12 +15,14 @@ import { useControls, Leva } from "leva";
 import { DoubleSide } from "three";
 import tentacleVertexShader from "./shaders/tentacles/vertex.glsl";
 import tentacleFragmentShader from "./shaders/tentacles/fragment.glsl";
+import { BallCollider, Physics, RigidBody } from "@react-three/rapier";
 
 // Shader material based on Bruno Simon's three.js journey hologram lesson
 const jellyMaterial = new THREE.ShaderMaterial({
 	uniforms: {
 		uTime: new THREE.Uniform(0),
 		uColor: new THREE.Uniform(new THREE.Color("#AF47D2")),
+		uWiggleIntensity: new THREE.Uniform(0.0),
 	},
 	transparent: true,
 	side: THREE.DoubleSide,
@@ -33,9 +35,7 @@ const jellyMaterial = new THREE.ShaderMaterial({
 export default function Experience() {
 	const testRef = useRef();
 	const jellyRef = useRef();
-	// useFrame(
-	// 	() => (testRef.current.rotation.x = testRef.current.rotation.y += 0.01)
-	// );
+	const rigidBody = useRef();
 
 	const materialParameters = useControls({
 		color: {
@@ -53,6 +53,17 @@ export default function Experience() {
 		}
 	});
 
+	const jellyJump = () => {
+		console.log("You touched the jelly fish!", jellyRef.current.children);
+		// Apply a force to the jelly fish
+		rigidBody.current.applyImpulse({
+			impulse: [10, 10, 10],
+			point: [0, 10, 0],
+		});
+
+		jellyMaterial.uniforms.uTime.value++;
+	};
+
 	// Traverse the scene to add the material to the jelly fish
 	const model = useGLTF("./model/jellyfish1.glb");
 	model.scene.traverse((child) => {
@@ -66,19 +77,26 @@ export default function Experience() {
 		<>
 			<OrbitControls />
 			{/* <directionalLight intensity={1} position={[-1, 2, -1]} /> */}
-			<ambientLight intensity={Math.PI / 4} />
-			<group>
-				<primitive
-					object={model.scene}
-					position={[0, 0, 0]}
-					material={jellyMaterial}
-					ref={jellyRef}
-					scale={[0.3, 0.3, 0.3]}
-				/>
-				<Tentacles />
-			</group>
-			// Test mesh
-			{/* <mesh ref={testRef}>
+
+			<Physics debug gravity={[0, 0, 0]} restitution={1}>
+				<ambientLight intensity={Math.PI / 4} />
+				<RigidBody
+					type='kinematicPosition'
+					ref={rigidBody}
+					colliders='hull'
+					onPointerOver={jellyJump}>
+					<group>
+						<primitive
+							object={model.scene}
+							position={[0, 0, 0]}
+							material={jellyMaterial}
+							ref={jellyRef}
+							scale={[0.3, 0.3, 0.3]}
+						/>
+						<Tentacles />
+					</group>
+					// Test mesh
+					{/* <mesh ref={testRef}>
 				<boxGeometry args={[1, 1]} position={[0, -1, 0]} />
 				<pointLight position={[1, 1, 1]} />
 				<shaderMaterial
@@ -86,6 +104,8 @@ export default function Experience() {
 					fragmentShader={jellyFragmentShader}
 				/>
 			</mesh> */}
+				</RigidBody>
+			</Physics>
 		</>
 	);
 }
@@ -156,4 +176,11 @@ function Tentacles() {
 			</group>
 		</>
 	);
+}
+
+function Stinger() {
+	// detect with mouse
+	// use the mouse as a point of origin for a few lightning bolts
+	// send the rays out from the mouse position towards a point in the direction of the camera
+	// add an arc to the rays
 }

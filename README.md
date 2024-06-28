@@ -19,9 +19,11 @@
 - [x] deploy to vercel
 - [x] import model
 - [x] apply hologram effect
-- [ ] add the glitch if the jelly is touched
+- [x] apply coffee smoke effect to procedurally generate tentacles
+- [ ] add the glitch if the jelly is touched or make it zap
+- [ ] 2*noise(3*x+t)+f3(x,t) - start with a line
 - [ ] add helper widgets (leva, perf)
-- [ ] apply coffee smoke effect to procedurally generate tentacles
+
 - [ ] use the differnt channels to get multiple noises
 - [ ] experiment using colour in the image
 - [ ] add tone mapping that's included in the fragment shader
@@ -32,6 +34,7 @@
 - [ ] add sound
 - [ ] change favicon
 - [ ] add loader
+- [ ]
 
 ### Stretch Goals
 

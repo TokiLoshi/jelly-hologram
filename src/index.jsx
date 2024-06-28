@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import Experience from "./Experience.jsx";
 import { Leva } from "leva";
@@ -8,16 +8,18 @@ import "./styles.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<>
 		<Leva collapsed />
-		<Canvas
-			className='r3f-canvas'
-			camera={{
-				fov: 20,
-				near: 0.5,
-				far: 250,
-				position: [-8, 2, 6],
-			}}>
-			<color attach='background' args={["#00224D"]} />
-			<Experience />
-		</Canvas>
+		<Suspense>
+			<Canvas
+				className='r3f-canvas'
+				camera={{
+					fov: 20,
+					near: 0.5,
+					far: 250,
+					position: [-8, 2, 6],
+				}}>
+				<color attach='background' args={["#00224D"]} />
+				<Experience />
+			</Canvas>
+		</Suspense>
 	</>
 );
