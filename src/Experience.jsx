@@ -7,7 +7,7 @@ import {
 	RoundedBox,
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import jellyVertexShader from "./shaders/hologram/vertex.glsl";
 import jellyFragmentShader from "./shaders/hologram/fragment.glsl";
@@ -16,6 +16,8 @@ import { DoubleSide } from "three";
 import tentacleVertexShader from "./shaders/tentacles/vertex.glsl";
 import tentacleFragmentShader from "./shaders/tentacles/fragment.glsl";
 import { BallCollider, Physics, RigidBody } from "@react-three/rapier";
+import stingerVertexShader from "./shaders/lightning/vertex.glsl";
+import stingerFragmentShader from "./shaders/lightning/fragment.glsl";
 
 // Shader material based on Bruno Simon's three.js journey hologram lesson
 const jellyMaterial = new THREE.ShaderMaterial({
@@ -33,10 +35,9 @@ const jellyMaterial = new THREE.ShaderMaterial({
 });
 
 export default function Experience() {
-	const testRef = useRef();
 	const jellyRef = useRef();
-	const rigidBody = useRef();
-	const testCube = useRef();
+	const rigidBodyRef = useRef();
+	const [isStinging, setIsStinging] = useState(false);
 
 	const materialParameters = useControls({
 		color: {
@@ -56,13 +57,31 @@ export default function Experience() {
 
 	const jellyJump = () => {
 		console.log("You touched the jelly fish!", jellyRef.current.children);
-		console.log("Rigid body", rigidBody.current);
+		console.log("Rigid body", rigidBodyRef.current);
+		console.log("Is stinging?", isStinging);
+		setIsStinging(!isStinging);
+		console.log("Changed stinging", isStinging);
+		setTimeout(() => {
+			setIsStinging(false);
+		}, 5000);
+
 		// Apply a force to the jelly fish
-		rigidBody.current.applyTorqueImpulse({
-			x: 0,
-			y: 0.1,
-			z: 0,
-		});
+		// rigidBodyRef.current.applyTorqueImpulse({
+		// 	x: 0,
+		// 	y: 0.1,
+		// 	z: 0,
+		// });
+		// model.scene.traverse((child) => {
+		// 	if (child.name === "jelly") {
+		// 		child.material = jellyMaterial;
+		// 		console.log("Model traversal reached!", jellyRef.current.children);
+		// 		rigidBodyRef.current.applyTorqueImpulse({
+		// 			x: 0.0,
+		// 			y: 0.1,
+		// 			z: 0.0,
+		// 		});
+		// 	}
+		// });
 
 		jellyMaterial.uniforms.uTime.value++;
 	};
@@ -76,55 +95,47 @@ export default function Experience() {
 		}
 	});
 
-	const cubeJump = () => {
-		console.log("Jump cube!");
-		console.log("Test cube", testCube.current);
-		testCube.current.applyTorqueImpulse({
-			x: 0,
-			y: 0.01,
-			z: 0,
-		});
-	};
-
 	return (
 		<>
 			<OrbitControls />
 			{/* <directionalLight intensity={1} position={[-1, 2, -1]} /> */}
-
+			<ambientLight intensity={Math.PI / 4} />
+			<group onPointerOver={jellyJump}>
+				<primitive
+					object={model.scene}
+					position={[0, 0, 0]}
+					material={jellyMaterial}
+					ref={jellyRef}
+					scale={[0.3, 0.3, 0.3]}
+				/>
+				<Tentacles />
+				<Stinger isStinging={isStinging} />
+			</group>
+			// Test mesh
+			{/* 
 			<Physics
 				debug
 				restitution={2}
-				linearDamping={0.5}
+				linearDamping={0.8}
+				angularDamping={0.9}
 				gravity={[0.0, 0.01, 0]}>
-				<ambientLight intensity={Math.PI / 4} />
-				<RigidBody ref={rigidBody} colliders='hull'>
-					<group onPointerOver={jellyJump}>
-						<primitive
-							object={model.scene}
-							position={[0, 0, 0]}
-							material={jellyMaterial}
-							ref={jellyRef}
-							scale={[0.3, 0.3, 0.3]}
-						/>
-						<Tentacles />
-					</group>
-				</RigidBody>
-				// Test mesh
-				{/* <mesh ref={testRef}>
+				<RigidBody ref={rigidBodyRef} colliders='hull'>
+				<mesh ref={testRef}>
 				<boxGeometry args={[1, 1]} position={[0, -1, 0]} />
 				<pointLight position={[1, 1, 1]} />
 				<shaderMaterial
 					vertexShader={jellyVertexShader}
 					fragmentShader={jellyFragmentShader}
 				/>
-			</mesh> */}
-				<RigidBody position={[1.5, 2, 0]} ref={testCube}>
+			</mesh>
+			</RigidBody> */}
+			{/* <RigidBody position={[1.5, 2, 0]} ref={testCube}>
 					<mesh castShadow onClick={cubeJump}>
 						<boxGeometry />
 						<meshStandardMaterial color='mediumpurple' />
 					</mesh>
-				</RigidBody>
-			</Physics>
+				</RigidBody> */}
+			{/* </Physics> */}
 		</>
 	);
 }
@@ -178,28 +189,35 @@ function Tentacles() {
 					/>
 					<primitive object={tentacleMaterial.current} attach='material' />
 				</mesh>
-				{/* <mesh
-					position={[0.2, -0.8, 0.1]}
-					rotation={Math.PI * 0.25}
-					ref={tentacleGeometryRef}>
-					<planeGeometry args={[0.7, 1.0, 10, 64]} />
-					<primitive object={tentacleMaterial.current} attach='material' />
-				</mesh> */}
-				{/* <mesh
-					position={[0.6, 1.8, 0.1]}
-					rotation={Math.PI * 0.25}
-					ref={tentacleRef}>
-					<planeGeometry args={[0.7, 1.0, 10, 64]} />
-					<primitive object={tentacleMaterial.current} attach='material' />
-				</mesh> */}
 			</group>
 		</>
 	);
 }
 
-function Stinger() {
-	// detect with mouse
-	// use the mouse as a point of origin for a few lightning bolts
-	// send the rays out from the mouse position towards a point in the direction of the camera
-	// add an arc to the rays
+function Stinger({ isStinging }) {
+	console.log("In stinger function?", isStinging);
+	if (isStinging) {
+		const stringerRef = useRef();
+		const stingerMaterial = useRef(
+			new THREE.ShaderMaterial({
+				vertexShader: stingerVertexShader,
+				fragmentShader: stingerFragmentShader,
+				wireframe: true,
+				uniforms: {
+					uTime: new THREE.Uniform(0),
+				},
+			})
+		);
+		return (
+			<>
+				<mesh
+					rotation-y={-Math.PI * 0.25}
+					position={[0, -0.7, 0]}
+					ref={stringerRef}>
+					<planeGeometry args={[1, 2, 16, 64]} />
+					<primitive object={stingerMaterial.current} attach='material' />
+				</mesh>
+			</>
+		);
+	}
 }
