@@ -36,6 +36,7 @@ export default function Experience() {
 	const testRef = useRef();
 	const jellyRef = useRef();
 	const rigidBody = useRef();
+	const testCube = useRef();
 
 	const materialParameters = useControls({
 		color: {
@@ -55,10 +56,12 @@ export default function Experience() {
 
 	const jellyJump = () => {
 		console.log("You touched the jelly fish!", jellyRef.current.children);
+		console.log("Rigid body", rigidBody.current);
 		// Apply a force to the jelly fish
-		rigidBody.current.applyImpulse({
-			impulse: [10, 10, 10],
-			point: [0, 10, 0],
+		rigidBody.current.applyTorqueImpulse({
+			x: 0,
+			y: 0.1,
+			z: 0,
 		});
 
 		jellyMaterial.uniforms.uTime.value++;
@@ -73,19 +76,29 @@ export default function Experience() {
 		}
 	});
 
+	const cubeJump = () => {
+		console.log("Jump cube!");
+		console.log("Test cube", testCube.current);
+		testCube.current.applyTorqueImpulse({
+			x: 0,
+			y: 0.01,
+			z: 0,
+		});
+	};
+
 	return (
 		<>
 			<OrbitControls />
 			{/* <directionalLight intensity={1} position={[-1, 2, -1]} /> */}
 
-			<Physics debug gravity={[0, 0, 0]} restitution={1}>
+			<Physics
+				debug
+				restitution={2}
+				linearDamping={0.5}
+				gravity={[0.0, 0.01, 0]}>
 				<ambientLight intensity={Math.PI / 4} />
-				<RigidBody
-					type='kinematicPosition'
-					ref={rigidBody}
-					colliders='hull'
-					onPointerOver={jellyJump}>
-					<group>
+				<RigidBody ref={rigidBody} colliders='hull'>
+					<group onPointerOver={jellyJump}>
 						<primitive
 							object={model.scene}
 							position={[0, 0, 0]}
@@ -95,8 +108,9 @@ export default function Experience() {
 						/>
 						<Tentacles />
 					</group>
-					// Test mesh
-					{/* <mesh ref={testRef}>
+				</RigidBody>
+				// Test mesh
+				{/* <mesh ref={testRef}>
 				<boxGeometry args={[1, 1]} position={[0, -1, 0]} />
 				<pointLight position={[1, 1, 1]} />
 				<shaderMaterial
@@ -104,6 +118,11 @@ export default function Experience() {
 					fragmentShader={jellyFragmentShader}
 				/>
 			</mesh> */}
+				<RigidBody position={[1.5, 2, 0]} ref={testCube}>
+					<mesh castShadow onClick={cubeJump}>
+						<boxGeometry />
+						<meshStandardMaterial color='mediumpurple' />
+					</mesh>
 				</RigidBody>
 			</Physics>
 		</>
