@@ -32,8 +32,8 @@ void main() {
   
   float alpha = abs(sin(uTime * 4.0)); // Flickering effect
 
-  vec3 color = vec3(0.3, 0.2, 0.9); // Purple lightning
-  gl_FragColor = vec4(color * sting, sting * alpha);
+  vec3 color = vec3(1.0, 1.0, 1.0); // Purple lightning
+  gl_FragColor = vec4(color * sting, sting);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }
