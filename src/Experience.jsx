@@ -5,6 +5,7 @@ import {
 	useTexture,
 	useGLTF,
 	RoundedBox,
+	Torus,
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
@@ -98,6 +99,7 @@ export default function Experience() {
 	return (
 		<>
 			<OrbitControls />
+			<color attach='background' args={["#00224D"]} />
 			{/* <directionalLight intensity={1} position={[-1, 2, -1]} /> */}
 			<ambientLight intensity={Math.PI / 4} />
 			<group onPointerOver={jellyJump}>
@@ -196,28 +198,44 @@ function Tentacles() {
 
 function Stinger({ isStinging }) {
 	console.log("In stinger function?", isStinging);
-	if (isStinging) {
-		const stringerRef = useRef();
-		const stingerMaterial = useRef(
-			new THREE.ShaderMaterial({
-				vertexShader: stingerVertexShader,
-				fragmentShader: stingerFragmentShader,
-				wireframe: true,
-				uniforms: {
-					uTime: new THREE.Uniform(0),
-				},
-			})
-		);
-		return (
-			<>
+	// if (isStinging) {
+	const stringerRef = useRef();
+	const perlinTexture = useTexture("./noiseTexture2.png");
+	perlinTexture.wrapS = THREE.RepeatWrapping;
+	perlinTexture.wrapT = THREE.RepeatWrapping;
+	const stingerMaterial = useRef(
+		new THREE.ShaderMaterial({
+			vertexShader: stingerVertexShader,
+			fragmentShader: stingerFragmentShader,
+			wireframe: false,
+			transparent: true,
+			depthWrite: false,
+			side: THREE.DoubleSide,
+			uniforms: {
+				uPerlinTexture: new THREE.Uniform(perlinTexture),
+				uTime: new THREE.Uniform(0),
+			},
+		})
+	);
+	useFrame((state, delta) => {
+		if (stringerRef.current) {
+			stingerMaterial.current.uniforms.uTime.value =
+				state.clock.getElapsedTime();
+		}
+	});
+	return (
+		<>
+			{isStinging && (
 				<mesh
-					rotation-y={-Math.PI * 0.25}
-					position={[0, -0.7, 0]}
-					ref={stringerRef}>
-					<planeGeometry args={[1, 2, 16, 64]} />
+					rotation-x={-Math.PI * 0.5}
+					position={[0, -0.6, -0]}
+					ref={stringerRef}
+					scale={0.4}>
+					<torusGeometry args={[1, 3, 56, 50]} />
 					<primitive object={stingerMaterial.current} attach='material' />
 				</mesh>
-			</>
-		);
-	}
+			)}
+		</>
+	);
+	// }
 }
