@@ -11,6 +11,10 @@ body,
 	padding: 0;
 }
 
+canvas {
+	background: linear-gradient(to bottom, #286ec9, #00224d);
+}
+
 .r3f-canvas {
 	touch-action: none;
 }
